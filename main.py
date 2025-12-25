@@ -1,5 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from datetime import datetime
+from zoneinfo import ZoneInfo
+from typing import Optional
 
 app = FastAPI(title="Test Backend", description="Simple test backend returning server time")
 
@@ -36,17 +38,6 @@ async def get_server_date():
         "weekday": current_date.strftime("%A")
     }
 
-@app.get("/date/iso")
-async def get_date_iso():
-    """Return current date in ISO format"""
-    return {"date": datetime.now().date().isoformat()}
-
-@app.get("/date/formatted")
-async def get_date_formatted():
-    """Return current date in readable format"""
-    current_date = datetime.now().date()
-    return {"date": current_date.strftime("%B %d, %Y")}
-
 @app.get("/date/today")
 async def get_today():
     """Return today's date information"""
@@ -57,5 +48,44 @@ async def get_today():
         "day_of_week": today.strftime("%A"),
         "day_of_year": today.timetuple().tm_yday
     }
+
+@app.get("/time/convert")
+async def convert_time(utc_time: str, timezone: str):
+    """
+    Convert UTC time to specified timezone
+
+    Parameters:
+    - utc_time: UTC time in ISO format (e.g., "2024-12-25T15:00:00")
+    - timezone: Target timezone (e.g., "Europe/Moscow", "America/New_York")
+    """
+    try:
+        # Parse UTC time
+        utc_datetime = datetime.fromisoformat(utc_time.replace('Z', '+00:00'))
+
+        # Ensure it's UTC
+        if utc_datetime.tzinfo is None:
+            utc_datetime = utc_datetime.replace(tzinfo=ZoneInfo("UTC"))
+        elif utc_datetime.tzinfo != ZoneInfo("UTC"):
+            # Convert to UTC if it's in different timezone
+            utc_datetime = utc_datetime.astimezone(ZoneInfo("UTC"))
+
+        # Convert to target timezone
+        target_tz = ZoneInfo(timezone)
+        converted_time = utc_datetime.astimezone(target_tz)
+
+        return {
+            "utc_time": utc_datetime.isoformat(),
+            "target_timezone": timezone,
+            "converted_time": converted_time.isoformat(),
+            "converted_time_readable": converted_time.strftime("%Y-%m-%d %H:%M:%S %Z"),
+            "utc_offset": converted_time.strftime("%z"),
+            "timezone_name": converted_time.strftime("%Z")
+        }
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Error converting time: {str(e)}. Make sure utc_time is in ISO format and timezone is valid."
+        )
 
 
