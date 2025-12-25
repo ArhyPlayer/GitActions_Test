@@ -75,6 +75,55 @@ docker run -p 9000:9000 -e PORT=9000 -e HOST=0.0.0.0 test-backend
 }
 ```
 
+### GET /date
+Возвращает текущую дату сервера в различных форматах.
+
+**Response:**
+```json
+{
+  "date": "2024-12-25",
+  "formatted": "2024-12-25",
+  "readable": "December 25, 2024",
+  "day": 25,
+  "month": 12,
+  "year": 2024,
+  "weekday": "Wednesday"
+}
+```
+
+### GET /date/iso
+Возвращает текущую дату в ISO формате.
+
+**Response:**
+```json
+{
+  "date": "2024-12-25"
+}
+```
+
+### GET /date/formatted
+Возвращает текущую дату в читаемом формате.
+
+**Response:**
+```json
+{
+  "date": "December 25, 2024"
+}
+```
+
+### GET /date/today
+Возвращает информацию о сегодняшней дате.
+
+**Response:**
+```json
+{
+  "today": "2024-12-25",
+  "is_weekend": false,
+  "day_of_week": "Wednesday",
+  "day_of_year": 360
+}
+```
+
 ## Документация API
 
 После запуска сервера документация Swagger UI будет доступна по адресу:
