@@ -20,4 +20,4 @@ ENV HOST=0.0.0.0 \
     DEBUG=false
 
 # Запускаем приложение
-CMD ["uvicorn", "main:app", "--host", "${HOST}", "--port", "${PORT}"]
+CMD uvicorn main:app --host ${HOST} --port ${PORT}
