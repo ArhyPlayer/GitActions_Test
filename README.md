@@ -124,6 +124,30 @@ docker run -p 9000:9000 -e PORT=9000 -e HOST=0.0.0.0 test-backend
 }
 ```
 
+### GET /time/convert
+Конвертирует время из UTC в указанный часовой пояс.
+
+**Parameters:**
+- `utc_time` (string): Время в UTC в формате ISO (например, "2024-12-25T15:00:00")
+- `timezone` (string): Целевой часовой пояс (например, "Europe/Moscow", "America/New_York")
+
+**Example Request:**
+```
+GET /time/convert?utc_time=2024-12-25T15:00:00&timezone=Europe/Moscow
+```
+
+**Response:**
+```json
+{
+  "utc_time": "2024-12-25T15:00:00+00:00",
+  "target_timezone": "Europe/Moscow",
+  "converted_time": "2024-12-25T18:00:00+03:00",
+  "converted_time_readable": "2024-12-25 18:00:00 MSK",
+  "utc_offset": "+0300",
+  "timezone_name": "MSK"
+}
+```
+
 ## CI/CD с GitHub Actions
 
 Проект настроен для автоматического развертывания через GitHub Actions.
